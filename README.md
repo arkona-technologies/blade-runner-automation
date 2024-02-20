@@ -53,4 +53,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For any questions, concerns, or feedback, feel free to reach out to us at [contact@arkona-technologies.com](mailto:contact@arkona-technologies.com).
 
 Happy automating! 🤖🚀
-```
