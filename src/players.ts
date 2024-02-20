@@ -4,7 +4,7 @@ import { z } from "zod";
 import { enforce } from "vscript";
 import fs from "fs";
 import path from "path";
-import { parse_header } from "vutil/bid-utils";
+import { parse_header } from "vutil/bid-utils.js";
 import { sh } from "vutil";
 
 export async function setup_video_players(vm: VAPI.VM.Any) {
