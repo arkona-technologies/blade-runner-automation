@@ -34,7 +34,6 @@ function parse_csv<T extends z.ZodRawShape>(
     });
     return schema.parse(obj);
   });
-  console.log(parsed);
   return parsed;
 }
 
@@ -51,11 +50,11 @@ async function set_transmitter_addresses(
     enforce_nonnull(
       config.type == "Audio"
         ? await vm.r_t_p_transmitter?.audio_transmitters.is_allocated(
-          config.index,
-        )
+            config.index,
+          )
         : await vm.r_t_p_transmitter?.video_transmitters.is_allocated(
-          config.index,
-        ),
+            config.index,
+          ),
     ),
     `${config.type}-Transmitter ${config.index} does not exist; skipping`,
   );
