@@ -50,7 +50,7 @@ to 2110-20 and stream it's embedded audio via a configurable
 amount (in this example 4) transmitters to 2110-30.
 
 ```
-URL_BLADE=http://172.16.210.107 SDI_INDEX=0 NUM_AUDIO=4 node --loader ts-node/esm src/base.ts
+URL_BLADE=http://172.16.210.107 SDI_INDEX=0 NUM_AUDIO=4 node --loader ts-node/esm src/sdi_ip.ts
 ```
 
 ## Contributing
