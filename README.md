@@ -53,6 +53,17 @@ amount (in this example 4) transmitters to 2110-30.
 URL_BLADE=http://172.16.210.107 SDI_INDEX=0 NUM_AUDIO=4 node --loader ts-node/esm src/sdi_ip.ts
 ```
 
+### Set Transmitter Multicast Addresses
+
+Assuming N Transmitters have been set up we may want to change their destination multicast addresses in one move. The supplied _set_addresses_from_csv_
+Function may be used to utilize a .csv file for easy addresss assignment. An example .csv file describing the layout can be found in this repository.
+
+For Example:
+
+```
+URL_BLADE=http://172.16.210.107 CSV_PATH=/path/to/some/file.csv node --loader ts-node/esm src/addresses.ts
+```
+
 ## Contributing
 
 Contributions to Blade Runner Automation are welcome! If you have improvements, bug fixes, or new features to contribute, please follow these steps:
