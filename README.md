@@ -12,22 +12,46 @@ Welcome to the **Blade Runner Automation** repository! This repository contains 
 To get started with Blade Runner Automation, follow these steps:
 
 1. **Clone the Repository:**
+
    ```
    git clone https://github.com/arkona-technologies/blade-runner-automation.git
    ```
 
 2. **Install Dependencies:**
+
    ```
    npm install
    ```
 
 3. **Usage:**
+
    - Utilize the provided helper functions and scripts in your TypeScript projects.
    - Refer to the documentation and comments within the code for usage instructions and examples.
 
 4. **Configuration:**
    - The pre-made scripts use environment variables for configuration.
    - Copy the example `.env` file provided in the repository and customize it according to your needs.
+
+## Examples
+
+### Base Setup
+
+This will Reset the Blade, ensure the loaded Application is _AVP_100GbE_ and lock PTP-Clock
+and Genlock to PTP-Domain 127
+
+```
+URL_BLADE=http://172.16.210.107 FPGA=AVP_100GbE PTP_DOMAIN=127 node --loader ts-node/esm src/base.ts
+```
+
+### SDI->IP
+
+Expecting a previously configured Blade, this will Stream the supplied SDI Input (in this case 0)
+to 2110-20 and stream it's embedded audio via a configurable
+amount (in this example 4) transmitters to 2110-30.
+
+```
+URL_BLADE=http://172.16.210.107 SDI_INDEX=0 NUM_AUDIO=4 node --loader ts-node/esm src/base.ts
+```
 
 ## Contributing
 
