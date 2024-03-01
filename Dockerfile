@@ -11,6 +11,7 @@ RUN npm install --legacy-peer-deps
 RUN npx tsc
 
 FROM node:20-alpine as run
+LABEL org.opencontainers.image.source=https://github.com/arkona-technologies/blade-runner-automation
 WORKDIR /app
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/build ./

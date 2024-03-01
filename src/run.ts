@@ -16,6 +16,7 @@ export const numberString = z
   })
   .transform((value) => parseInt(value!));
 
+// Automatically open a secure, potentially basic-auth protected Connection based the supplied URL
 export async function open_connection(url: string): Promise<VAPI.VM.Any> {
   const as_url = new URL(url);
   const vm = await VAPI.VM.open({
@@ -34,8 +35,11 @@ export async function open_connection(url: string): Promise<VAPI.VM.Any> {
 }
 
 export async function run(func: (vm: VAPI.VM.Any) => Promise<void>) {
+  const env = dotenv.config(); // Reads a .env file and parses its content into the enviornment variables of this process
+  console.log(
+    `Parsed enviornment file: ${JSON.stringify(env.parsed, null, 3)}`,
+  );
   const URL_BLADE = z.string().url().parse(process.env["URL_BLADE"]);
-  dotenv.config();
   const vm = await open_connection(URL_BLADE);
   try {
     await func(vm);
