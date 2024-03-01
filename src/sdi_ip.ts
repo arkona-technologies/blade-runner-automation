@@ -28,7 +28,7 @@ export async function sdi_to_ip(vm: VAPI.VM.Any) {
   const AUDIO_CHANNELS_PER_TX = 32 / NUM_AUDIO;
   const sdi_in = vm.i_o_module.input.row(SDI_INDEX).sdi.output;
 
-  const tx = await stream_video(sdi_in.video);
+  const tx = await stream_video(sdi_in.video, { constrain: false });
   console.log(
     `${(await tx.v_src.status.read()).source?.raw.kwl.padEnd(42)} -> ${await tx.row_name()} `,
   );

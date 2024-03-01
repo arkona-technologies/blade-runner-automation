@@ -1,13 +1,29 @@
 import * as VAPI from "vapi";
 import { numberString, run } from "./run.js";
-import { Duration, unreachable } from "vscript";
+import { Duration, asyncFilter, poll_until, unreachable } from "vscript";
 import { z } from "zod";
 import { ensure_nmos_settings } from "vutil";
 import { setup_ptp } from "vutil/ptp.js";
 import { setup_sdi_io } from "vutil/sdi_connections.js";
+import { isIPv4 } from "net";
 
 // Base Setup for C100/AT300. These scripts will set up 'basic' PTP and Genlock,
 // configure NMOS-Registries and ensure specified FPGA Applications are loaded
+
+// Since some functions NEED interfaces with valid ipv4 addresses
+// we need to potentially wait for e.g. dhcp interfaces to get an address
+async function has_ipv4(port: VAPI.AT1130.NetworkInterfaces.Port) {
+  const interfaces = await port.virtual_interfaces.rows();
+  let found = false;
+  for (const ifc of interfaces) {
+    const ips = await ifc.ip_addresses.rows();
+    for (const ip of ips) {
+      const addr = await ip.ip_address.read();
+      found = found || (!!addr && isIPv4(addr));
+    }
+  }
+  return found;
+}
 
 async function base_setup_at1130(vm: VAPI.AT1130.Root) {
   const PTP_DOMAIN = z
@@ -58,6 +74,23 @@ async function base_setup_at1130(vm: VAPI.AT1130.Root) {
     enable: NMOS_REGISTRY != undefined,
     registry: [NMOS_URL, NMOS_URL, NMOS_URL, NMOS_URL],
   });
+
+  // Poll all 100G interfaces for up to 2 minutes  until all have valid IPv4 Addresses
+  for (const p of await asyncFilter(
+    await vm.network_interfaces.ports.rows(),
+    async (p) => {
+      return await p.supports_ptp.read();
+    },
+  ))
+    await poll_until(
+      async () => {
+        return { satisfied: await has_ipv4(p) };
+      },
+      {
+        pollInterval: new Duration(500, "ms"),
+        timeout: new Duration(2, "min"),
+      },
+    );
 
   await setup_ptp(vm, {
     mode: PTP_MODE,
