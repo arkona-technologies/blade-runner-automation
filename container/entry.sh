@@ -3,6 +3,10 @@
 
 set -e
 
+
+# Modify this  script to your liking using the scripts found under src/***.ts
+
+echo 'Starting Base-Setup'
 node base.js
 
 echo 'Setting IP->SDI'
