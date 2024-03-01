@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "pino": "^8.19.0",
     "vapi": "http://172.16.210.107/vapi.tar.gz",
     "vscript": "http://172.16.210.107/vscript.tar.gz",
     "vutil": "http://172.16.210.107/vutil.tar.gz",
