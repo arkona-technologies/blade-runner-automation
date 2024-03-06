@@ -7,6 +7,9 @@ Welcome to the **Blade Runner Automation** repository! This repository contains 
 - **Helper Functions:** Includes a collection of TypeScript helper functions tailored for AT300 processing blades.
 - **Scripts:** Pre-written scripts for common automation tasks, helping you save time and effort in your workflow.
 
+## Requirements
+- git
+- node.js (v20.11 LTS)
 ## Getting Started
 
 To get started with Blade Runner Automation, follow these steps:
@@ -23,10 +26,21 @@ To get started with Blade Runner Automation, follow these steps:
    npm install
    ```
 
+   **Compile TypeScript**
+   ```
+   npx tsc
+   ```
+
 3. **Usage:**
 
    - Utilize the provided helper functions and scripts in your TypeScript projects.
    - Refer to the documentation and comments within the code for usage instructions and examples.
+  
+   - Call the scripts indivually like so:
+   - 
+     ```<ENVIRONMENT VARIABLES> node build/base.js```
+     
+     ```<ENVIRONMENT VARIABLES> node build/sdi_ip.js```
 
 4. **Configuration:**
    - The pre-made scripts use environment variables for configuration.
