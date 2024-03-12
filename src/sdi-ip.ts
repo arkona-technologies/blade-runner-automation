@@ -25,7 +25,7 @@ export async function sdi_to_ip(vm: VAPI.VM.Any) {
     .default(4)
     .parse(process.env["NUM_AUDIO"]);
 
-  const AUDIO_CHANNELS_PER_TX = 32 / NUM_AUDIO;
+  const AUDIO_CHANNELS_PER_TX = 32 / NUM_AUDIO; // SDI Inputs will never have more than 32 Channels
   const sdi_in = vm.i_o_module.input.row(SDI_INDEX).sdi.output;
 
   const tx = await stream_video(sdi_in.video, { constrain: false });
@@ -33,6 +33,7 @@ export async function sdi_to_ip(vm: VAPI.VM.Any) {
     `${(await tx.v_src.status.read()).source?.raw.kwl.padEnd(42)} -> ${await tx.row_name()} `,
   );
 
+  // Create Shufflers for Number of Audio Streams
   for (let idx of range(0, NUM_AUDIO)) {
     const shuffler = await vm.audio_shuffler?.instances.create_row();
     if (shuffler instanceof VAPI.AT1130.AudioShuffler.ShufflerAsNamedTableRow) {
@@ -41,6 +42,7 @@ export async function sdi_to_ip(vm: VAPI.VM.Any) {
       );
     }
     const asrc_shuffler = await shuffler.a_src.status.read();
+    // Set Shuffler AUDIO_CHANNELS_PER_TX Shuffler Inputs (offset the channel from sdi-in by the channels per tx * shuffler_index)
     for (let i = 0; i < AUDIO_CHANNELS_PER_TX; i++) {
       asrc_shuffler[i] = sdi_in.audio.channels.reference_to_index(
         idx * AUDIO_CHANNELS_PER_TX + i,
