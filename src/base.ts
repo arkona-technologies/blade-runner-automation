@@ -25,6 +25,28 @@ async function has_ipv4(port: VAPI.AT1130.NetworkInterfaces.Port) {
   return found;
 }
 
+export async function ensure_100g_addresses(vm: VAPI.AT1130.Root) {
+  for (const p of await asyncFilter(
+    await vm.network_interfaces.ports.rows(),
+    async (p) => {
+      return await p.supports_ptp.read();
+    },
+  ))
+    await poll_until(
+      async () => {
+        return { satisfied: await has_ipv4(p) };
+      },
+      {
+        pollInterval: new Duration(500, "ms"),
+        timeout: new Duration(2, "min"),
+      },
+    );
+  for (const p of await vm.p_t_p_flows.ports.rows())
+    await p.active.wait_until((active) => active, {
+      timeout: new Duration(1, "min"),
+    });
+}
+
 async function base_setup_at1130(vm: VAPI.AT1130.Root) {
   const PTP_DOMAIN = z
     .number()
@@ -44,7 +66,7 @@ async function base_setup_at1130(vm: VAPI.AT1130.Root) {
     .default("Multicast")
     .parse(process.env["PTP_RESPONSE_TYPE"]);
   const FPGA = z
-    .enum(["AVP_100GbE", "JPEGXS_TX_100GbE", "JPEGXS_RX_100GbE", "PCAP_100GbE"])
+    .enum(["AVP_100GbE", ...VAPI.AT1130.System.Enums.FPGASelection])
     .optional()
     .default("AVP_100GbE")
     .parse(process.env["FPGA"]);
@@ -75,33 +97,20 @@ async function base_setup_at1130(vm: VAPI.AT1130.Root) {
     registry: [NMOS_URL, NMOS_URL, NMOS_URL, NMOS_URL],
   });
 
-  // Poll all 100G interfaces for up to 2 minutes  until all have valid IPv4 Addresses
-  for (const p of await asyncFilter(
-    await vm.network_interfaces.ports.rows(),
-    async (p) => {
-      return await p.supports_ptp.read();
-    },
-  ))
-    await poll_until(
-      async () => {
-        return { satisfied: await has_ipv4(p) };
-      },
-      {
-        pollInterval: new Duration(500, "ms"),
-        timeout: new Duration(2, "min"),
-      },
-    );
+  // Poll all 100G interfaces for up to 2 minutes  until all have valid IPv4 Addresses in case of DHCP
+  await ensure_100g_addresses(vm);
 
   await setup_ptp(vm, {
     mode: PTP_MODE,
     locking_policy: "Dynamic",
     delay_resp_mode: PTP_RESPONSE_TYPE,
     ptp_domain: PTP_DOMAIN,
+    await_calibration: true,
   });
 
   console.log(`Setting up SDI IO`);
   const directions = new Array<VAPI.IOModule.ConfigDirection>(16).fill("Input");
-  if (NUM_SDI_OUT >= 1) directions.fill("Output", 0, NUM_SDI_OUT - 1); // indexing is 0 based!
+  if (NUM_SDI_OUT >= 1) directions.fill("Output", 0, NUM_SDI_OUT);
   console.log(directions);
   await setup_sdi_io(vm, { directions: directions });
 
@@ -120,13 +129,7 @@ async function base_setup_at1101(vm: VAPI.AT1101.Root) {
     .default("Multicast")
     .parse(process.env["PTP_RESPONSE_TYPE"]);
   const FPGA = z
-    .enum([
-      "AVP_40GbE",
-      "UDX_40GbE",
-      "JPEGXS_40GbE",
-      "CC3D_40GbE",
-      "PCAP_40GbE",
-    ])
+    .enum(["AVP_40GbE", ...VAPI.AT1101.System.Enums.FPGASelection])
     .default("AVP_40GbE")
     .parse(process.env["FPGA"]);
   const NMOS_REGISTRIES = z
