@@ -59,16 +59,24 @@ export async function configure_ip_setup(vm: VAPI.VM.Any) {
     network_config.rear,
   );
   if (rear || p0 || p1) {
-    console.log(
-      `[${vm.raw.identify()}]: rebooting in 5 seconds for new configuration: ${JSON.stringify(network_config, null, 3)}`,
-    );
-    console.log("...");
-    await pause(new Duration(5, "s"));
-    await vm.raw
-      .reboot({
-        timeout: new Duration(15, "s"),
-      })
-      .catch((_e) => process.exit(0));
+    {
+      for (const p in network_config) {
+        console.log(
+          `Setting addresses for port ${p}: ${network_config[p as keyof typeof network_config].base?.ip_addresses.map((a) => `${a[0]}/${a[1]}`)}`,
+        );
+        console.log(
+          `Setting Routes for port ${p}: ${network_config[p as keyof typeof network_config].base?.routes.map((r) => `${r.dst ?? "default"} via ${r.via} `)}`,
+        );
+      }
+      console.log("...");
+      await pause(new Duration(5, "s"));
+      console.log("Rebooting...");
+      await vm.raw
+        .reboot({
+          timeout: new Duration(15, "s"),
+        })
+        .catch((_e) => process.exit(0));
+    }
   }
 }
 run(configure_ip_setup);
