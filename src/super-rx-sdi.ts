@@ -11,9 +11,9 @@ import {
 export async function super_rx_to_sdi(vm: VAPI.VM.Any) {
   enforce(
     !!vm.i_o_module &&
-      !!vm.r_t_p_receiver &&
-      !!vm.audio_shuffler &&
-      vm instanceof VAPI.AT1130.Root,
+    !!vm.r_t_p_receiver &&
+    !!vm.audio_shuffler &&
+    vm instanceof VAPI.AT1130.Root,
     "Misssing required Software Modules",
   );
 
@@ -41,7 +41,8 @@ export async function super_rx_to_sdi(vm: VAPI.VM.Any) {
     jpeg_xs_caliber: "JPEG_XS_singlelink_uhd",
     supports_2110_40: true,
     supports_2022_6: true,
-    st2042_2_caliber: null,
+    st2042_2_caliber: "ST2042_2_singlelink_uhd",
+    supports_uhd_sample_interleaved: false,
   });
   const shuffler = await vm.audio_shuffler?.instances.create_row();
   if (shuffler instanceof VAPI.AT1130.AudioShuffler.ShufflerAsNamedTableRow) {
