@@ -32,6 +32,8 @@ export async function super_rx_to_sdi(vm: VAPI.VM.Any) {
     .default(4)
     .parse(process.env["NUM_AUDIO"]);
 
+  const WITH_VC2 = z.coerce.boolean().default(true).parse(process.env["VC2"]);
+
   const AUDIO_CHANNELS_PER_TX = 32 / NUM_AUDIO;
   const sdi_out = vm.i_o_module.output.row(SDI_INDEX);
   await vm.r_t_p_receiver.settings.clean_switching_policy.write("Whatever");
@@ -41,7 +43,7 @@ export async function super_rx_to_sdi(vm: VAPI.VM.Any) {
     jpeg_xs_caliber: "JPEG_XS_singlelink_uhd",
     supports_2110_40: true,
     supports_2022_6: true,
-    st2042_2_caliber: "ST2042_2_singlelink_uhd",
+    st2042_2_caliber: WITH_VC2 ? "ST2042_2_singlelink_uhd" : null,
     supports_uhd_sample_interleaved: false,
   });
   const shuffler = await vm.audio_shuffler?.instances.create_row();
