@@ -1,5 +1,5 @@
 import * as VAPI from "vapi";
-import { run } from "./run.js";
+import { booleanString, run } from "./run.js";
 import { z } from "zod";
 import { enforce } from "vscript";
 import { audio_ref, range, video_ref } from "vutil";
@@ -32,7 +32,7 @@ export async function super_rx_to_sdi(vm: VAPI.VM.Any) {
     .default(4)
     .parse(process.env["NUM_AUDIO"]);
 
-  const WITH_VC2 = z.coerce.boolean().default(true).parse(process.env["VC2"]);
+  const WITH_VC2 = booleanString.default("true").parse(process.env["VC2"]);
 
   const AUDIO_CHANNELS_PER_TX = 32 / NUM_AUDIO;
   const sdi_out = vm.i_o_module.output.row(SDI_INDEX);
