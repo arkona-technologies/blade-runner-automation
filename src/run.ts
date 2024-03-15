@@ -36,15 +36,13 @@ export async function open_connection(url: string): Promise<VAPI.VM.Any> {
 
 export async function run(func: (vm: VAPI.VM.Any) => Promise<void>) {
   const env = dotenv.config(); // Reads a .env file and parses its content into the enviornment variables of this process
-  console.log(
-    `Parsed enviornment file: ${JSON.stringify(env.parsed, null, 3)}`,
-  );
   const URL_BLADE = z.string().url().parse(process.env["URL_BLADE"]);
   const vm = await open_connection(URL_BLADE);
   try {
     await func(vm);
   } catch (e) {
     console.log(`[${vm.raw.identify()}]: ` + e);
+    console.log(e);
   } finally {
     console.log("Exiting...");
     await vm.close();
