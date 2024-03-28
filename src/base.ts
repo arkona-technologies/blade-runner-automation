@@ -94,7 +94,7 @@ async function base_setup_at1130(vm: VAPI.AT1130.Root) {
 
   await ensure_nmos_settings(vm, {
     enable: NMOS_REGISTRY != undefined,
-    registry: [NMOS_URL, NMOS_URL, NMOS_URL, NMOS_URL],
+    registry: NMOS_URL,
   });
 
   // Poll all 100G interfaces for up to 2 minutes  until all have valid IPv4 Addresses in case of DHCP
@@ -132,10 +132,12 @@ async function base_setup_at1101(vm: VAPI.AT1101.Root) {
     .enum(["AVP_40GbE", ...VAPI.AT1101.System.Enums.FPGASelection])
     .default("AVP_40GbE")
     .parse(process.env["FPGA"]);
-  const NMOS_REGISTRIES = z
-    .array(z.string().url().optional())
-    .length(4)
-    .parse(process.env["NMOS_REGISTRIES"]?.split(",").map((str) => str.trim()));
+  const NMOS_REGISTRY = z
+    .string()
+    .url()
+    .optional()
+    .parse(process.env["NMOS_REGISTRY"]);
+  const NMOS_URL = new URL(NMOS_REGISTRY ?? "http://127.0.0.1");
   console.log(`Setting FPGA to ${FPGA}`);
   await vm.system.select_fpga.command.write(FPGA);
 
@@ -143,8 +145,8 @@ async function base_setup_at1101(vm: VAPI.AT1101.Root) {
   await vm.raw.reset();
 
   await ensure_nmos_settings(vm, {
-    enable: NMOS_REGISTRIES.some((n) => n !== undefined),
-    registry: NMOS_REGISTRIES.map((r) => new URL(r ?? "")),
+    enable: true,
+    registry: NMOS_URL,
   });
 
   await setup_ptp(vm, {
