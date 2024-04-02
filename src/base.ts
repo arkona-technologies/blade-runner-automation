@@ -94,7 +94,7 @@ async function base_setup_at1130(vm: VAPI.AT1130.Root) {
 
   await ensure_nmos_settings(vm, {
     enable: NMOS_REGISTRY != undefined,
-    registry: NMOS_URL,
+    registry: [NMOS_URL, NMOS_URL, NMOS_URL, NMOS_URL],
   });
 
   // Poll all 100G interfaces for up to 2 minutes  until all have valid IPv4 Addresses in case of DHCP
@@ -146,7 +146,7 @@ async function base_setup_at1101(vm: VAPI.AT1101.Root) {
 
   await ensure_nmos_settings(vm, {
     enable: true,
-    registry: NMOS_URL,
+    registry: [NMOS_URL, NMOS_URL, NMOS_URL, NMOS_URL],
   });
 
   await setup_ptp(vm, {
