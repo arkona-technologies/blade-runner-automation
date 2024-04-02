@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "vscript": "https://sdk.arkona-technologies.de/vscript@2.4.27/node/vscript.tar.gz",
-    "vapi": "https://sdk.arkona-technologies.de/vapi@2.4.31/node/vapi.tar.gz",
-    "vutil": "https://sdk.arkona-technologies.de/vutil@2.4.47/node/vutil.tar.gz",
+    "vscript": "https://sdk.arkona-technologies.de/vscript@2.5.2/node/vscript.tar.gz",
+    "vapi": "https://sdk.arkona-technologies.de/vapi@2.5.30/node/vapi.tar.gz",
+    "vutil": "https://sdk.arkona-technologies.de/vutil@2.5.51/node/vutil.tar.gz",
     "zod": "^3.22.4"
   }
 }
