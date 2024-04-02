@@ -3,7 +3,12 @@ import * as VAPI from "vapi";
 import { enforce } from "vscript";
 import fs from "fs";
 import path from "path";
-import { encode_biw, load_wave, upload } from "vutil/biw-utils.js";
+import {
+  encode_biw,
+  load_wave,
+  upload,
+  wave_file_to_biw,
+} from "vutil/biw-utils.js";
 import { z } from "zod";
 import { run } from "./run.js";
 
@@ -17,7 +22,8 @@ export async function setup_audio_players(vm: VAPI.VM.Any) {
 
   await vm.re_play?.audio.players.delete_all();
   for (const d of data) {
-    const biw = await load_wave(d);
+    const wav = load_wave(d);
+    const biw = wave_file_to_biw(wav);
     const as_buffer = encode_biw(biw);
     const n = `player-${path.basename(d).split(".")[0]}`.substring(0, 31);
     const player = await vm.re_play.audio.players.create_row({ name: n });
@@ -27,7 +33,7 @@ export async function setup_audio_players(vm: VAPI.VM.Any) {
     await player.capabilities.frequency.command.write("F48000");
     await player.capabilities.capacity.command.write({
       variant: "Samples",
-      value: { samples: biw.header.SamplesPerChannles },
+      value: { samples: biw.header.SamplesPerChannel },
     });
     const url = `http://${vm.raw.ip}/replay/audio?action=write&handler=${player.index}&store=clip_single_file`;
     await upload(url, as_buffer);
