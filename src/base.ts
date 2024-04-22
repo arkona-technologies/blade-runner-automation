@@ -1,6 +1,6 @@
 import * as VAPI from "vapi";
 import { numberString, run } from "./run.js";
-import { Duration, asyncFilter, poll_until, unreachable } from "vscript";
+import { asyncFilter, Duration, poll_until, unreachable } from "vscript";
 import { z } from "zod";
 import { ensure_nmos_settings } from "vutil";
 import { setup_ptp } from "vutil/ptp.js";
@@ -31,7 +31,7 @@ export async function ensure_100g_addresses(vm: VAPI.AT1130.Root) {
     async (p) => {
       return await p.supports_ptp.read();
     },
-  ))
+  )) {
     await poll_until(
       async () => {
         return { satisfied: await has_ipv4(p) };
@@ -41,10 +41,12 @@ export async function ensure_100g_addresses(vm: VAPI.AT1130.Root) {
         timeout: new Duration(2, "min"),
       },
     );
-  for (const p of await vm.p_t_p_flows.ports.rows())
+  }
+  for (const p of await vm.p_t_p_flows.ports.rows()) {
     await p.active.wait_until((active) => active, {
       timeout: new Duration(1, "min"),
     });
+  }
 }
 
 async function base_setup_at1130(vm: VAPI.AT1130.Root) {
@@ -112,8 +114,19 @@ async function base_setup_at1130(vm: VAPI.AT1130.Root) {
   const directions = new Array<VAPI.IOModule.ConfigDirection>(16).fill("Input");
   if (NUM_SDI_OUT >= 1) directions.fill("Output", 0, NUM_SDI_OUT);
   console.log(directions);
-  await setup_sdi_io(vm, { directions: directions });
-
+  const [_ins, sdi_outs] = await setup_sdi_io(vm, { directions: directions });
+  for (const o of sdi_outs) {
+    await o.sdi.embedded_audio.command.write([
+      "Embed",
+      "Embed",
+      "Embed",
+      "Embed",
+      "Embed",
+      "Embed",
+      "Embed",
+      "Embed",
+    ]);
+  }
   await vm.audio_shuffler?.global_cross_fade.write(new Duration(50, "ms"));
 }
 async function base_setup_at1101(vm: VAPI.AT1101.Root) {
