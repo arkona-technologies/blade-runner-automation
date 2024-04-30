@@ -48,13 +48,29 @@ To get started with Blade Runner Automation, follow these steps:
 
 ## Examples
 
-### Base Setup
+### IP Settings
 
-This will Reset the Blade, ensure the loaded Application is _AVP_100GbE_ and lock PTP-Clock
-and Genlock to PTP-Domain 127
+This changes the IP addresses of the blade's ports. 
+To do this, first change the IP addresses in the "ip-setup-example.json" or "ip-config.example.json" files. 
+
+If you want to use VLAN tagging, you can see how to do this in the "ip-config.example.json" file. 
+
+After making the changes, save the files and execute the following command. It is important that the variable "NETWORK_CONFIG" is set with a .json file with the IP addresses. 
+
+The whole command looks like this, for example: 
 
 ```
-URL_BLADE=http://172.16.210.107 FPGA=AVP_100GbE PTP_DOMAIN=127 node --loader ts-node/esm src/base.ts
+URL_BLADE=http://172.16.182.2 NETWORK_CONFIG=ip-setup-example.json node --loader ts-node/esm src/ip-setup.ts
+```
+
+### Base Setup
+
+This resets the blade, ensures that the loaded application is _AVP_100GbE_ and locks PTP clock and genlock to PTP domain 127, sets the PTP mode to slave, sets the PTP response type to multicast and the nmos registry to 172.16.0.53:30010. 
+You can also set the number of SDI outs, as in this example to the number of 8. 
+
+
+```
+URL_BLADE=http://172.16.182.2 FPGA=AVP_100GbE PTP_MODE=SlaveOnly PTP_DOMAIN=127 PTP_RESPONSE_TYPE=Unicast NMOS_REGISTRY=http://172.16.0.53:30010 node --loader ts-node/esm src/base.ts
 ```
 
 ### SDI->IP

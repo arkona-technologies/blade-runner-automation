@@ -11,17 +11,16 @@ import {
 export async function super_rx_to_sdi(vm: VAPI.VM.Any) {
   enforce(
     !!vm.i_o_module &&
-    !!vm.r_t_p_receiver &&
-    !!vm.audio_shuffler &&
-    vm instanceof VAPI.AT1130.Root,
+      !!vm.r_t_p_receiver &&
+      !!vm.audio_shuffler &&
+      vm instanceof VAPI.AT1130.Root,
     "Misssing required Software Modules",
   );
 
-  const max_sdi_in = (await vm.i_o_module?.output.rows()).length;
   const SDI_INDEX = z.coerce
     .number()
     .gte(0)
-    .lte(max_sdi_in)
+    .lte(15)
     .parse(process.env["SDI_INDEX"]);
 
   const NUM_AUDIO = z.coerce
@@ -56,10 +55,12 @@ export async function super_rx_to_sdi(vm: VAPI.VM.Any) {
 
   for (let idx of range(0, NUM_AUDIO)) {
     const arx = await create_audio_receiver(vm);
-    for (let i = 0; i < AUDIO_CHANNELS_PER_TX; i++)
+    for (let i = 0; i < AUDIO_CHANNELS_PER_TX; i++) {
       asrc_shuffler[idx * AUDIO_CHANNELS_PER_TX + i] =
         arx.media_specific.output.audio.channels.reference_to_index(i) as any;
+    }
   }
+  await shuffler.a_src.command.write(asrc_shuffler as any);
   await sdi_out.sdi.v_src.command.write(
     video_ref(rx.media_specific.output.video),
   );
