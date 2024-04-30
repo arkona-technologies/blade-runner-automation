@@ -48,6 +48,21 @@ To get started with Blade Runner Automation, follow these steps:
 
 ## Examples
 
+### IP Settings
+
+This changes the IP addresses of the blade's ports. 
+To do this, first change the IP addresses in the "ip-setup-example.json" or "ip-config.example.json" files. 
+
+If you want to use VLAN tagging, you can see how to do this in the "ip-config.example.json" file. 
+
+After making the changes, save the files and execute the following command. It is important that the variable "NETWORK_CONFIG" is set with a .json file with the IP addresses. 
+
+The whole command looks like this, for example: 
+
+```
+URL_BLADE=http://172.16.182.2 NETWORK_CONFIG=ip-setup-example.json node --loader ts-node/esm src/ip-setup.ts
+```
+
 ### Base Setup
 
 This will Reset the Blade, ensure the loaded Application is _AVP_100GbE_ and lock PTP-Clock
