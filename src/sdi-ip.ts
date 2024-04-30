@@ -10,11 +10,10 @@ export async function sdi_to_ip(vm: VAPI.VM.Any) {
     !!vm.i_o_module && !!vm.r_t_p_transmitter && !!vm.audio_shuffler,
     "Misssing required Software Modules",
   );
-  const max_sdi_in = (await vm.i_o_module?.input.rows()).length;
   const SDI_INDEX = z.coerce
     .number()
     .gte(0)
-    .lte(max_sdi_in)
+    .lte(15)
     .parse(process.env["SDI_INDEX"]);
 
   const NUM_AUDIO = z.coerce
@@ -60,7 +59,9 @@ export async function sdi_to_ip(vm: VAPI.VM.Any) {
       `Shuffler - Audio - TX - ${tx.index} `.substring(0, 31),
     );
     console.log(
-      `${(await tx.a_src.status.read()).source?.raw.kwl?.padEnd(42)} -> ${await tx.row_name()} `,
+      `${(await tx.a_src.status.read()).source?.raw.kwl?.padEnd(
+        42,
+      )} -> ${await tx.row_name()} `,
     );
   }
 }
