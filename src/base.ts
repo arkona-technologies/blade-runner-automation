@@ -52,7 +52,6 @@ export async function ensure_100g_addresses(vm: VAPI.AT1130.Root) {
 }
 
 async function base_setup_at1130(vm: VAPI.AT1130.Root) {
-  console.log(process.env);
   const PTP_DOMAIN = z
     .preprocess(
       (x) => (x ? x : undefined),
