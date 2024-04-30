@@ -65,11 +65,12 @@ URL_BLADE=http://172.16.182.2 NETWORK_CONFIG=ip-setup-example.json node --loader
 
 ### Base Setup
 
-This will Reset the Blade, ensure the loaded Application is _AVP_100GbE_ and lock PTP-Clock
-and Genlock to PTP-Domain 127
+This resets the blade, ensures that the loaded application is _AVP_100GbE_ and locks PTP clock and genlock to PTP domain 127, sets the PTP mode to slave, sets the PTP response type to multicast and the nmos registry to 172.16.0.53:30010. 
+You can also set the number of SDI outs, as in this example to the number of 8. 
+
 
 ```
-URL_BLADE=http://172.16.210.107 FPGA=AVP_100GbE PTP_DOMAIN=127 node --loader ts-node/esm src/base.ts
+URL_BLADE=http://172.16.182.2 FPGA=AVP_100GbE PTP_MODE=SlaveOnly PTP_DOMAIN=127 PTP_RESPONSE_TYPE=Unicast NMOS_REGISTRY=http://172.16.0.53:30010 node --loader ts-node/esm src/base.ts
 ```
 
 ### SDI->IP
