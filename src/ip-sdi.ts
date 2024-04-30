@@ -27,7 +27,7 @@ export async function ip_to_sdi(vm: VAPI.VM.Any) {
     .default(4)
     .parse(process.env["NUM_AUDIO"]);
 
-  const UHD = z.coerce.boolean().default(true).parse(process.env["UHD"]);
+  const UHD = process.env["UHD"] == "true";
 
   const AUDIO_CHANNELS_PER_TX = 32 / NUM_AUDIO;
   const sdi_out = vm.i_o_module.output.row(SDI_INDEX);
