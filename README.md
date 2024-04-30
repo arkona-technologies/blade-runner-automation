@@ -70,7 +70,7 @@ You can also set the number of SDI outs, as in this example to the number of 8.
 
 
 ```
-URL_BLADE=http://172.16.182.2 FPGA=AVP_100GbE PTP_MODE=SlaveOnly PTP_DOMAIN=127 PTP_RESPONSE_TYPE=Unicast NMOS_REGISTRY=http://172.16.0.53:30010 node --loader ts-node/esm src/base.ts
+URL_BLADE=http://172.16.182.2 FPGA=AVP_100GbE PTP_MODE=SlaveOnly PTP_DOMAIN=127 PTP_RESPONSE_TYPE=Unicast NMOS_REGISTRY=http://172.16.0.53:30010 NUM_SDI_OUT=8 node --loader ts-node/esm src/base.ts
 ```
 
 ### SDI->IP
