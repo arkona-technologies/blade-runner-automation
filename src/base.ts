@@ -1,5 +1,5 @@
 import * as VAPI from "vapi";
-import { numberString, run } from "./run.js";
+import { run } from "./run.js";
 import { asyncFilter, Duration, poll_until, unreachable } from "vscript";
 import { z } from "zod";
 import { ensure_nmos_settings } from "vutil";
@@ -26,12 +26,14 @@ async function has_ipv4(port: VAPI.AT1130.NetworkInterfaces.Port) {
 }
 
 export async function ensure_100g_addresses(vm: VAPI.AT1130.Root) {
-  for (const p of await asyncFilter(
-    await vm.network_interfaces.ports.rows(),
-    async (p) => {
-      return await p.supports_ptp.read();
-    },
-  )) {
+  for (
+    const p of await asyncFilter(
+      await vm.network_interfaces.ports.rows(),
+      async (p) => {
+        return await p.supports_ptp.read();
+      },
+    )
+  ) {
     await poll_until(
       async () => {
         return { satisfied: await has_ipv4(p) };
@@ -50,14 +52,14 @@ export async function ensure_100g_addresses(vm: VAPI.AT1130.Root) {
 }
 
 async function base_setup_at1130(vm: VAPI.AT1130.Root) {
+  console.log(process.env);
   const PTP_DOMAIN = z
-    .number()
-    .int()
-    .gte(0)
-    .lte(127)
-    .optional()
+    .preprocess(
+      (x) => (x ? x : undefined),
+      z.coerce.number().int().min(0).max(127).optional(),
+    )
     .default(127)
-    .parse(numberString.parse(process.env["PTP_DOMAIN"]));
+    .parse(process.env["PTP_DOMAIN"]);
   const PTP_MODE = z
     .enum(["SlaveOnly", "FreerunMaster", "GPSMaster"])
     .default("SlaveOnly")
@@ -77,14 +79,14 @@ async function base_setup_at1130(vm: VAPI.AT1130.Root) {
     .url()
     .optional()
     .parse(process.env["NMOS_REGISTRY"]);
+
   const NUM_SDI_OUT = z
-    .number()
-    .int()
-    .gte(0)
-    .lte(16)
-    .optional()
+    .preprocess(
+      (x) => (x ? x : undefined),
+      z.coerce.number().int().min(0).max(16).optional(),
+    )
     .default(8)
-    .parse(numberString.parse(process.env["NUM_SDI_OUT"]));
+    .parse(process.env["NUM_SDI_OUT"]);
 
   const NMOS_URL = new URL(NMOS_REGISTRY ?? "http://127.0.0.1");
 
@@ -130,13 +132,13 @@ async function base_setup_at1130(vm: VAPI.AT1130.Root) {
   await vm.audio_shuffler?.global_cross_fade.write(new Duration(50, "ms"));
 }
 async function base_setup_at1101(vm: VAPI.AT1101.Root) {
-  const PTP_DOMAIN = z
+  const PTP_DOMAIN = z.coerce
     .number()
     .int()
     .gte(0)
     .lte(127)
     .default(127)
-    .parse(numberString.parse(process.env["PTP_DOMAIN"]));
+    .parse(process.env["PTP_DOMAIN"]);
   const PTP_RESPONSE_TYPE = z
     .enum(["Unicast", "Multicast"])
     .default("Multicast")
