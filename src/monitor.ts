@@ -12,7 +12,6 @@ const ReceiverBackup = z.object({
   timeout_seconds: z.number().optional().default(2),
 });
 const ConfigRoot = z.object({
-  url: z.string().url(),
   receivers: z.array(ReceiverBackup),
 });
 
@@ -42,16 +41,14 @@ export async function monitor_rx(vm: VAPI.VM.Any) {
         !dirty[vrx.index]
       ) {
         console.log(
-          `[${vm.raw.identify()}]: Found mismatch between target and egress on ${await vrx
-            .row_name()}`,
+          `[${vm.raw.identify()}]: Found mismatch between target and egress on ${await vrx.row_name()}`,
         );
         dirty[vrx.index] = true;
         setTimeout(async () => {
           if (!dirty[vrx.index]) return;
           try {
             console.log(
-              `[${vm.raw.identify()}]: ${await vrx
-                .row_name()} remains dirty; switching to backup sdp`,
+              `[${vm.raw.identify()}]: ${await vrx.row_name()} remains dirty; switching to backup sdp`,
             );
             await session.set_sdp(
               tr.current_target == "A" ? "B" : "A",
