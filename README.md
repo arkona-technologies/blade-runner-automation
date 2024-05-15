@@ -83,6 +83,18 @@ amount (in this example 4) transmitters to 2110-30.
 URL_BLADE=http://172.16.210.107 SDI_INDEX=0 NUM_AUDIO=4 node --loader ts-node/esm src/sdi-ip.ts
 ```
 
+### IP->SDI
+
+With an already configured blade, a video receiver is set up that can receive 2110-20/40 or 2022-6, as well as four audio receivers by default that can receive 2110-30. The number of audio receivers can be set with the variable "NUM_AUDIO". 
+
+The "SDI-INDEX" variable is used to specify the SDI output to be used for playback. 
+
+The "UHD" variable can be used to define whether the receiver should be UHD-capable or not. The receiver is UHD-capable by default. 
+
+```
+URL_BLADE=http://172.16.210.107 SDI_INDEX=0 NUM_AUDIO=4 UHD node --loader ts-node/esm src/ip-sdi.ts
+```
+
 ### Set Transmitter Multicast Addresses
 
 Assuming N Transmitters have been set up we may want to change their destination multicast addresses in one move. The supplied _set_addresses_from_csv_
