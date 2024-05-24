@@ -28,7 +28,7 @@ To get started with Blade Runner Automation, follow these steps:
 
    **Compile TypeScript**
    ```
-   npx tsc
+   npm exec tsc
    ```
 
 3. **Usage:**
