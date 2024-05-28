@@ -15,8 +15,14 @@ const zEmptyStringToNull = z.preprocess((arg) => {
 export const CSVAddrSchema = z.object({
   type: z.enum(["Audio", "Video", "Meta"]),
   index: z.coerce.number().gte(0).int(),
-  primary_dst_address: z.string().transform((s) => (s === "" ? null : s)),
-  secondary_dst_address: z.string().transform((s) => (s === "" ? null : s)),
+  primary_dst_address: z
+    .string()
+    .transform((s) => (s === "" ? null : s))
+    .nullable(),
+  secondary_dst_address: z
+    .string()
+    .transform((s) => (s === "" ? null : s))
+    .nullable(),
   primary_dst_port: z.coerce.number(),
   secondary_dst_port: z.coerce.number(),
   primary_payload_type: z.coerce.number(),
@@ -35,14 +41,16 @@ function parse_csv<T extends z.ZodRawShape>(
     .filter((line) => line.length > 0)
     .slice(1)
     .map((line) => line.split(",").flatMap((entry) => entry.trim()))
-    .filter((row) => row.every((c) => c.trim().length > 0));
+    .map((r) => r.map((c) => (c == "" ? null : c)));
   const parsed = rows.map((row) => {
     let obj: any = {};
     Object.keys(schema.shape).forEach((k, idx) => {
       obj[k] = row[idx];
     });
+    console.log(obj);
     return schema.parse(obj);
   });
+  console.log(parsed);
   return parsed;
 }
 
@@ -87,12 +95,16 @@ async function set_transmitter_addresses(
   const maybe_session = await tx?.generic.hosting_session.status.read();
   if (!!maybe_session) await maybe_session.active.command.write(false);
 
+  const full_addr = (addr: string | null, port: number) => {
+    if (addr == null) return null;
+    return `${addr}:${port}`;
+  };
   await ip_config?.primary.dst_address.command.write(
-    `${config.primary_dst_address}:${config.primary_dst_port}`,
+    full_addr(config.primary_dst_address, config.primary_dst_port),
   );
   if (config.secondary_dst_address && config.secondary_dst_port) {
     await ip_config?.secondary.dst_address.command.write(
-      `${config.secondary_dst_address}:${config.secondary_dst_port}`,
+      full_addr(config.secondary_dst_address, config.secondary_dst_port),
     );
   }
 
