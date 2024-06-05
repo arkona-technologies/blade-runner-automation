@@ -1,0 +1,9 @@
+{
+  "receivers": [
+    {
+      "timeout_seconds": 3,
+      "index": 0,
+      "backup_sdp": "v=0\no=- 0 1 IN IP4 172.16.164.0\ns=AT300-164-PLAYER: RTP Video Transmitter #5\ni=Video streamed by VM via RTP Video Transmitter #5\nt=0 0\na=group:DUP primary secondary\nm=video 9020 RTP/AVP 97\nc=IN IP4 239.164.0.5/64\na=source-filter: incl IN IP4 239.164.0.5 172.16.164.0\na=rtpmap:97 raw/90000\na=fmtp:97 SSN=ST2110-20:2017; TP=2110TPN; depth=10; sampling=YCbCr-4:2:2; TCS=UNSPECIFIED; PM=2110GPM; colorimetry=BT709; range=NARROW; width=1920; height=1080; exactframerate=50;\na=mediaclk:direct=0\na=ts-refclk:localmac=C0-F9-D2-01-00-88\na=mid:primary\nm=video 9020 RTP/AVP 97\nc=IN IP4 239.164.1.5/64\na=source-filter: incl IN IP4 239.164.1.5 172.16.164.1\na=rtpmap:97 raw/90000\na=fmtp:97 SSN=ST2110-20:2017; TP=2110TPN; depth=10; sampling=YCbCr-4:2:2; TCS=UNSPECIFIED; PM=2110GPM; colorimetry=BT709; range=NARROW; width=1920; height=1080; exactframerate=50;\na=mediaclk:direct=0\na=ts-refclk:localmac=C0-F9-D2-01-00-89\na=mid:secondary\n"
+    }
+  ]
+}

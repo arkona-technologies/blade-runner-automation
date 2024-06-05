@@ -11,7 +11,7 @@ import {
 export async function ip_to_sdi(vm: VAPI.VM.Any) {
   enforce(
     !!vm.i_o_module && !!vm.r_t_p_receiver && !!vm.audio_shuffler,
-    "Misssing required Software Modules",
+    "Misssing required Software Modules"
   );
   const SDI_INDEX = z.coerce
     .number()
@@ -27,20 +27,26 @@ export async function ip_to_sdi(vm: VAPI.VM.Any) {
     .default(4)
     .parse(process.env["NUM_AUDIO"]);
 
+  const ANC_DATA = z.coerce
+    .boolean()
+    .default(false)
+    .parse(process.env["ANC_DATA"]);
+
   const UHD = process.env["UHD"] == "true";
 
   const AUDIO_CHANNELS_PER_TX = 32 / NUM_AUDIO;
   const sdi_out = vm.i_o_module.output.row(SDI_INDEX);
 
   const rx = await create_video_receiver(vm, {
-    st2110_20_caliber: UHD ? "ST2110_singlelink_uhd" : "ST2110_upto_3G",
-    supports_2110_40: true,
-    st2042_2_caliber: null,
+    jpeg_xs_caliber: UHD ? "JPEG_XS_singlelink_uhd" : "JPEG_XS_upto_3G",
+    supports_2110_40: ANC_DATA,
+    supports_clean_switching: true,
   });
+
   const shuffler = await vm.audio_shuffler?.instances.create_row();
   if (shuffler instanceof VAPI.AT1130.AudioShuffler.ShufflerAsNamedTableRow) {
     await shuffler.genlock.command.write(
-      (vm as VAPI.AT1130.Root).genlock?.instances.row(0)!,
+      (vm as VAPI.AT1130.Root).genlock?.instances.row(0)!
     );
   }
   const asrc_shuffler = await shuffler.a_src.status.read();
@@ -54,7 +60,7 @@ export async function ip_to_sdi(vm: VAPI.VM.Any) {
   }
   await shuffler.a_src.command.write(asrc_shuffler as any);
   await sdi_out.sdi.v_src.command.write(
-    video_ref(rx.media_specific.output.video),
+    video_ref(rx.media_specific.output.video)
   );
   await shuffler.rename(`Shuffler-${sdi_out.raw.kwl}`.substring(0, 31));
   await sdi_out.a_src.command.write(audio_ref(shuffler.output));

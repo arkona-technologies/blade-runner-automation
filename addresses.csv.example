@@ -1,4 +1,4 @@
-type,index,primary_dst_address,secondary_dst_address,primary_payload_type,secondary_payload_type
+type,index,primary_dst_address,secondary_dst_address,primary_dst_port,secondary_dst_port,primary_payload_type,secondary_payload_type
 Video,0,239.1.1.0,239.1.0.1,9001,9002,97,97
 Audio,2,239.0.1.0,239.1.0.1,9001,9002,96,96
 Meta,23,238.0.42.0,239.4.0.1,9004,9002,101,101
