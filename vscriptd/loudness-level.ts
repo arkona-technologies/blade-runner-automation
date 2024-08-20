@@ -67,6 +67,7 @@ loudness.measurement.watch(async (m) => {
     const current = await fader.read();
     const set_val = current + sign * Math.min(MAX_DB_PER_UPDATE, Math.abs(out)); // todo: see above
     await fader.write(Math.max(Math.min(12.0, set_val), -128));
+    await trim.src.write('A');
   } catch (e) {
     console.log("Caught Error: ", e);
   }

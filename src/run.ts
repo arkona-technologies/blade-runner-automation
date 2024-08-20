@@ -48,3 +48,16 @@ export async function run(func: (vm: VAPI.VM.Any) => Promise<void>) {
     await vm.close();
   }
 }
+
+export async function job(func: (vm: VAPI.VM.Any) => Promise<void>) {
+  const vm = await VAPI.VM.open({ ip: "127.0.0.1" });
+  try {
+    await func(vm);
+  } catch (e) {
+    console.log(`[${vm.raw.identify()}]: ` + e);
+    console.log(e);
+  } finally {
+    console.log("Exiting...");
+    await vm.close();
+  }
+}
